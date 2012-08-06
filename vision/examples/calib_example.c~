@@ -19,7 +19,7 @@ int camera;
 
 int main(int argc, char* argv[]) {
   
-  if(argc != 5){
+  if(argc != 4){
     printf("ERROR: Wrong number of input parameters\n");
     printf("Usage: [cam] [width] [height] [n_frames]\n");
     return -1;
