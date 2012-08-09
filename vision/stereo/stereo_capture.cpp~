@@ -75,7 +75,9 @@ int main(int argc, char ** argv)
       
       save_count = 0;
       n_images--;
-      waitKey(150);
+      printf("GET READY\n\n");
+      waitKey(2000);
+      printf("Searching\n");
     }
     
     

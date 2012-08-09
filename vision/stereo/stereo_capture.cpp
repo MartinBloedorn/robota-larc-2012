@@ -9,7 +9,7 @@
 #include <opencv/cxmisc.h>
 #include <opencv/ml.h>
 
-#define LEFT_CAP 1
+#define LEFT_CAP 0
 #define RIGHT_CAP 2
 
 //g++ stereo_capture.cpp `pkg-config --cflags --libs opencv-2.3.1` -o stereo_capture
@@ -75,7 +75,9 @@ int main(int argc, char ** argv)
       
       save_count = 0;
       n_images--;
-      waitKey(500);
+      printf("GET READY\n\n");
+      waitKey(2000);
+      printf("Searching\n");
     }
     
     
