@@ -2,21 +2,43 @@
 #include <highgui.h>
 #include <iostream>
 #include <string>
-#include <pcl/common/common_headers.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #include <boost/thread/thread.hpp>
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/contrib/contrib.hpp"
+#include <ros/ros.h>
 
+#include <pcl/ros/conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/common/common_headers.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl_ros/point_cloud.h>
+
+#include <boost/thread/thread.hpp>
 #include <stdio.h>
 
 #define LEFT  0
 #define RIGHT 2
 
 using namespace cv;
+
+typedef pcl::PointCloud<pcl::PointXYZRGB> PointCloud;
+
+//This function creates a PCL visualizer, sets the point cloud to view and returns a pointer
+/*boost::shared_ptr<pcl::visualization::PCLVisualizer> createVisualizer (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
+{
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer->setBackgroundColor (0, 0, 0);
+  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
+  viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "reconstruction");
+  //viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "reconstruction");
+  viewer->addCoordinateSystem ( 1.0 );
+  viewer->initCameraParameters ();
+  return (viewer);
+}*/
 
 //fockin' variables
 Mat M1, D1, M2, D2, Q, R, T, R1, P1, R2, P2, frame_l, frame_r;
@@ -25,12 +47,18 @@ StereoBM bm;
 StereoSGBM sgbm;
 StereoVar var;
 
-char * intrinsic_filename = "intrinsics.yml";
-char * extrinsic_filename = "extrinsics.yml";
+
+char * intrinsic_filename = "calib/intrinsics.yml";
+char * extrinsic_filename = "calib/extrinsics.yml";
 
 int main(int argc, char** argv)
 {
   enum { STEREO_BM=0, STEREO_SGBM=1, STEREO_HH=2, STEREO_VAR=3 };
+  
+  ros::init(argc, argv, "robot_stereo");
+  ros::NodeHandle n;
+  ros::Publisher pub = n.advertise<PointCloud>("stereo_points", 1);
+  ros::Rate loop_rate(30);  
   
   int alg = STEREO_SGBM;
   
@@ -66,6 +94,7 @@ int main(int argc, char** argv)
    
   fs["R"] >> R;
   fs["T"] >> T;
+  fs["Q"] >> Q;
   
   //main capture - rectify - match loop
   while( !(waitKey(10) == 'q') )
@@ -149,5 +178,77 @@ int main(int argc, char** argv)
         disp.convertTo(disp8, CV_8U);    
     
     imshow("disparity", disp8);
+    //dilate(disp8, disp8, Mat(),Point(-1,-1), 1, BORDER_CONSTANT, morphologyDefaultBorderValue());
+    //erode (disp8, disp8, Mat(),Point(-1,-1), 1, BORDER_CONSTANT, morphologyDefaultBorderValue());
+    //imshow("eroded disparity", disp8);
+    
+    //Get the interesting parameters from Q
+    double Q03, Q13, Q23, Q32, Q33;
+    Q03 = Q.at<double>(0,3);
+    Q13 = Q.at<double>(1,3);
+    Q23 = Q.at<double>(2,3);
+    Q32 = Q.at<double>(3,2);
+    Q33 = Q.at<double>(3,3);   
+    
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
+  
+  double px, py, pz;
+  uchar pr, pg, pb;
+  
+  for (int i = 0; i < frame_lr.rows; i++)
+  {
+    uchar* rgb_ptr = frame_lr.ptr<uchar>(i);
+
+    uchar* disp_ptr = disp8.ptr<uchar>(i);
+
+    for (int j = 0; j < frame_lr.cols; j++)
+    {
+      //Get 3D coordinates
+      uchar d = disp_ptr[j];
+      if ( d == 0 ) continue; //Discard bad pixels
+      double pw = -1.0 * static_cast<double>(d) * Q32 + Q33; 
+      px = static_cast<double>(j) + Q03;
+      py = static_cast<double>(i) + Q13;
+      pz = Q23;
+      
+      px = px/pw;
+      py = py/pw;
+      pz = pz/pw;
+
+      //Get RGB info
+      pb = rgb_ptr[3*j];
+      pg = rgb_ptr[3*j+1];
+      pr = rgb_ptr[3*j+2];
+      
+      //Insert info into point cloud structure
+      pcl::PointXYZRGB point;
+      point.x = px;
+      point.y = py;
+      point.z = pz;
+      uint32_t rgb = (static_cast<uint32_t>(pr) << 16 |
+              static_cast<uint32_t>(pg) << 8 | static_cast<uint32_t>(pb));
+      point.rgb = *reinterpret_cast<float*>(&rgb);
+      point_cloud_ptr->points.push_back (point);
+    }
   }
+  point_cloud_ptr->width = (int) point_cloud_ptr->points.size();
+  point_cloud_ptr->height = 1;
+  
+  point_cloud_ptr->header.frame_id = "/map";
+  pub.publish(point_cloud_ptr);
+  
+  //Create visualizer
+  //boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+  //viewer = createVisualizer( point_cloud_ptr );
+  
+  //Main loop
+  //while ( !viewer->wasStopped())
+  //{
+  //  viewer->spinOnce(100);
+  //  boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+  //}
+    
+  }
+  
+  return 0;
 }

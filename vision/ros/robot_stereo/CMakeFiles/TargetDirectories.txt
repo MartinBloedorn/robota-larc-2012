@@ -1,0 +1,16 @@
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/ROSBUILD_genmsg_cpp.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/ROSBUILD_genmsg_lisp.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/ROSBUILD_gensrv_cpp.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/ROSBUILD_gensrv_lisp.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/clean-test-results.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/live_pcl.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/rosbuild_precompile.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/rosbuild_premsgsrvgen.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/rospack_genmsg.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/rospack_genmsg_libexe.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/rospack_gensrv.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/test.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/test-future.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/test-results.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/test-results-run.dir
+/home/martin/Documents/robota-larc-2012/vision/ros/robot_stereo/CMakeFiles/tests.dir
