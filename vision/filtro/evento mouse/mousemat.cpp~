@@ -1,0 +1,54 @@
+#include <iostream>
+#include <time.h>
+#include <cstdio>
+#include <cstring>
+// Include OpenCV
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+using namespace cv;
+int xx,yy;
+int estado=0;
+//bool drawing_box = false;
+// Implement mouse callback
+
+void onMouse( int event, int x, int y, int, void* )
+{
+	if( event == CV_EVENT_LBUTTONDOWN ){
+
+    xx=x;
+    yy=y;
+    return;
+    }
+    if( event == CV_EVENT_LBUTTONUP ){
+
+    xx=x;
+    yy=y;
+    return;
+    }
+}
+    
+Mat image = imread("frame1.png",3);
+int main(int argc,char* argv[])
+{
+	const char* name = "Box Example";
+	//box = cvRect(-1,-1,0,0);
+
+	
+	//zero( image );
+	//Mat temp = image;
+
+
+	// Set up the callback
+	setMouseCallback( name,onMouse, 0);
+	// Main loop
+	while("1")
+	{
+	imshow( name, image );
+	setMouseCallback( name,onMouse, 0);
+	printf("%d,%d-%d\n",xx,yy,estado);
+	if( cvWaitKey( 15 )==27 )	break;
+	}
+
+
+	return 0;
+}
