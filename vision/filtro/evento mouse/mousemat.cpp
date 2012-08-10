@@ -54,7 +54,7 @@ void onMouse( int event, int x, int y, int, void* )
 				box.y += box.height;
 				box.height *= -1;
 			}
-			draw_box( temp, box );
+			draw_box(image, box );
 			break;
 	}
 }
@@ -67,14 +67,12 @@ int main(int argc,char* argv[])
 	// Main loop
 	while("1")
 	{
-		temp=image;
+		temp=image.clone();
 		if( drawing_box )   draw_box( temp, box );
 		setMouseCallback( name,onMouse, 0);
-		if(estado!=3)
-		printf("%d,%d-%d\n",xx,yy,estado);
+		if(estado!=3)	printf("%d,%d-%d\n",xx,yy,estado);
 		if( cvWaitKey( 15 )==27 )	break;
 		imshow(name,temp);
-		imshow("lala",image);
 	}
 	return 0;
 }
