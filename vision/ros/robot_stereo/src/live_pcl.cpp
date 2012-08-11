@@ -48,8 +48,8 @@ StereoSGBM sgbm;
 StereoVar var;
 
 
-char * intrinsic_filename = "calib/intrinsics.yml";
-char * extrinsic_filename = "calib/extrinsics.yml";
+char * intrinsic_filename = "./calib/intrinsics.yml";
+char * extrinsic_filename = "./calib/extrinsics.yml";
 
 int main(int argc, char** argv)
 {

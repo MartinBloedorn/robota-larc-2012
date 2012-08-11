@@ -48,8 +48,8 @@ StereoSGBM sgbm;
 StereoVar var;
 
 
-char * intrinsic_filename = "calib/intrinsics.yml";
-char * extrinsic_filename = "calib/extrinsics.yml";
+char * intrinsic_filename = "./calib/intrinsics.yml";
+char * extrinsic_filename = "./calib/extrinsics.yml";
 
 int main(int argc, char** argv)
 {
@@ -234,7 +234,7 @@ int main(int argc, char** argv)
   point_cloud_ptr->width = (int) point_cloud_ptr->points.size();
   point_cloud_ptr->height = 1;
   
-  point_cloud_ptr.->header.frame_id = "/map";
+  point_cloud_ptr->header.frame_id = "/map";
   pub.publish(point_cloud_ptr);
   
   //Create visualizer
